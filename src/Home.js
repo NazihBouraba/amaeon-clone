@@ -43,6 +43,7 @@ function Home() {
 
                 <div className='home__row'>
                     <Product
+                        id={1239}
                         title={'Bulk Shaker Iconic, Protéine Shaker, Noir Metallisé, 750 ml'}
                         image={'https://m.media-amazon.com/images/I/61hZ-DjbV4L._AC._SR360,460.jpg'}
                         price={5.99}
