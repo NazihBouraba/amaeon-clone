@@ -2,14 +2,43 @@ import React from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import "./Login.css"
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from './firebase';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+
+    let navigate = useNavigate();
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
     const signIn = (e) => {
-        e.preventDefaut()
+        e.preventDefault();
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in 
+                const user = userCredential.user;
+                navigate("/");
+                // ...
+            })
+            .catch((error) => {
+                alert(error => error.message)
+                const errorCode = error.code;
+                const errorMessage = error.message;
+            });
+    }
+
+    const register = (e) => {
+        e.preventDefault()
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((auth) => {
+                // if successfully creates a user with email and password
+                console.log(auth);
+                if (auth)
+                    navigate("/");
+            })
+            .catch(error => alert(error.message))
     }
 
     return (
@@ -31,7 +60,7 @@ function Login() {
                     see our Privacy Notice, our Cookies Notice
                     and-our I Interest Besed-Ads notice
                 </p>
-                <button className='login__registreButton'>Create your amazon account</button>
+                <button onClick={register} className='login__registreButton'>Create your amazon account</button>
             </div>
 
         </div>
