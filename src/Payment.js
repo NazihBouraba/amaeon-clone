@@ -9,9 +9,13 @@ import { getBasketTotal } from './reducer';
 import CurrencyFormat from 'react-currency-format';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from './axios';
+import { db } from './firebase';
+import { collection, setDoc, doc } from "firebase/firestore";
 
 function Payment() {
 
+    const [{ basket, user }, dispatch] = useStateValue();
     let navigate = useNavigate();
     const stripe = useStripe();
     const elements = useElements();
@@ -27,6 +31,7 @@ function Payment() {
             const response = await axios({
                 method: "post",
                 //stripe expects a total in a currencies subunits 
+                // call our backend 
                 url: `/payments/create?total=${getBasketTotal(basket) * 100}`
             })
             setClientSecret(response.data.clientSecret);
@@ -34,6 +39,7 @@ function Payment() {
 
         getClientSecret();
     }, [basket])
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -44,9 +50,27 @@ function Payment() {
                 card: elements.getElement(CardElement)
             }
         }).then(({ paymentIntent }) => {
+            // paymentinetnt == payment confirmation
+
+            // store the order in firestore
+
+            try {
+                const userRef = (doc(db, "users", user?.id, "orders", paymentIntent), {
+                    basket: basket,
+                    amount: paymentIntent.amount,
+                    created: paymentIntent.created
+
+                })
+            } catch (e) {
+                console.error("Error adding document: ", e);
+            }
+
             setSucceeded(true);
             setError(null);
             setProcessing(false);
+            dispatch({
+                type: "EMPTY_BASKET"
+            })
             navigate("/orders", { replace: true });
 
         })
@@ -62,7 +86,7 @@ function Payment() {
         setError(event.error ? event.error.message : "");
     }
 
-    const [{ basket, user }, dispatch] = useStateValue();
+
     return (
         <div className='payment'>
             <div className="payment__container">

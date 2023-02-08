@@ -10,6 +10,7 @@ import { useStateValue } from './StateProvider';
 import Payment from './Payment';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from "@stripe/react-stripe-js"
+import Orders from './Orders';
 
 const promise = loadStripe("pk_test_51MYM3hLuG8lt0yxGAyLIVPz10XReLP2gx9Ah4vtgaWqKuVyh2AGfNaJ3MjAWJSj0CIUOagiUToPt1ome7SCmX8cS00xLpm1cvd")
 
@@ -20,7 +21,6 @@ function App() {
   useEffect(() => {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
-      console.log("the user is >>>>", user)
       if (user) {
         // User is signed in, see docs for a list of available properties
 
@@ -48,6 +48,7 @@ function App() {
       <div className="app">
         <Routes >
           <Route path="/" element={<><Header /><Home /></>} />
+          <Route path="/orders" element={<><Header /><Orders /></>} />
           <Route path="/checkout" element={<><Header /><Checkout /></>} />
           <Route path="/login" element={<Login />} />
           <Route path="/payment" element={<><Header /> <Elements stripe={promise}><Payment /></Elements></>} />

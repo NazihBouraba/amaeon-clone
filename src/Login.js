@@ -34,7 +34,6 @@ function Login() {
         createUserWithEmailAndPassword(auth, email, password)
             .then((auth) => {
                 // if successfully creates a user with email and password
-                console.log(auth);
                 if (auth)
                     navigate("/");
             })
